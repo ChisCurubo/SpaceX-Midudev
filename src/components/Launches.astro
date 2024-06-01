@@ -1,0 +1,40 @@
+---
+
+import {type APISpaceXRes} from '../types/api'
+import Cardlaunch from '../components/Cardlaunch.astro';
+//Podeis ejecutar ejecua¿tar js que querramos 
+//const res = await fetch('https://api.spacexdata.com/v5/launches');
+//const data=  await res.json()
+//console.log(data)// en el server o tiempi de compilacion
+const res = await fetch('https://api.spacexdata.com/v5/launches/query', {
+    method: "POST",
+    headers:{
+        "Content-Type": "applicantion/json",
+    }, 
+    body:JSON.stringify({
+        query:{},
+        options: {
+            sort: {
+                date_unix: 'asc'
+            },
+            limit: 12,
+        }
+    })
+});
+
+const {docs : launches}= await res.json()  as APISpaceXRes
+console.log(launches)
+
+---
+
+<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {launches.map((launch)=>
+       <Cardlaunch
+       id={launch.id}
+       img={launch.links.patch.small}
+       details={launch.details} 
+       flightNumber={launch.flight_number}
+       success={launch.success}/>
+    )}   
+</div>
+
